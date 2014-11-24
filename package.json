@@ -4,7 +4,7 @@
   "dependencies": {
     "asynquence": "~0.5.5-b",
     "bcrypt": "^0.8.0",
-    "body-parser": "~1.9.1",
+    "body-parser": "^1.9.3",
     "express": "~4.10.2",
     "express-jwt": "~0.4.0",
     "jsonwebtoken": "~1.1.2",
