@@ -32,7 +32,7 @@ var expressJwt = require('express-jwt');
 var jwtSecret = 'keyboard cat';
 
 var routes = {
-    user: require('./routes/user')
+    user: require('./routes/users/routes')
 };
 
 
@@ -43,7 +43,6 @@ app.use('/api', expressJwt({secret: jwtSecret}));
 
 app.route('/users')
     .post(routes.user.post);
-
 
 
 app.route('/login')
@@ -67,6 +66,7 @@ app.route('/login')
             // No user found, send a 400
             .or(function(err) { res.status(400).json(err); });
     });
+
 
 app.route('/api/ping')
     .all(function(req, res) {

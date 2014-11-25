@@ -1,20 +1,14 @@
-var db = require('../db/db');
-
-var config = require('../config');
 var ASQ = require('asynquence');
+var config = require('../../config');
+var db = require('../../db/db');
+var accessors = require('./accessors');
 
 
-var byEmail = function(email) {
-    return ASQ(function(done) {
-        db.users.findOne({ email: email }, function(err, user) {
-            if (err) { return done.fail(err); }
-            if (!user) { return done.fail({ message: 'Unknown user ' + email }); }
-
-            done(user);
-        });
-    });
-};
-
+// =============================================================================
+// Method   : POST
+// Path     : /api/posts
+// Summary  : Create a new post entry
+// =============================================================================
 exports.post = function(req, res) {
     var user = {
         // password is handled bellow
@@ -38,3 +32,4 @@ exports.post = function(req, res) {
         })
         .or(function(err) { res.status(400).send(err) });
 };
+
