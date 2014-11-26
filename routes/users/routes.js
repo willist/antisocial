@@ -24,7 +24,7 @@ exports.post = function(req, res) {
         .then(function(done, hash) {
             user.password = hash;
 
-            db.users.insert(user, function(err, doc) {
+            db.users.model.insert(user, function(err, doc) {
                 if (err) { return res.status(400).send(err); }
 
                 res.send(doc);

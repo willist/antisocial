@@ -1,2 +1,2 @@
-{"name":"Kevin Welcher","email":"kwelch12@gmail.com","auditFields":{"dateUpdated":1416839604171,"dateCreated":1416839604171},"password":"$2a$10$J39x8M/HJCVjZ9L8MT1pR.a9X1vc9fcVtVdv.MIB0p.4rZrpx6OM.","_id":"HuO218PpLlg67TNx"}
+{"email":"kwelch12@gmail.com","auditFields":{"dateUpdated":1416975157043,"dateCreated":1416975157043},"password":"$2a$10$BhaQ5KRrK3/MeCP2OGQ.6eddew3j1l2riY4.W2S3/nODhzwZEzvY2","_id":"yuW73ql3n8gCBspA"}
 {"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}

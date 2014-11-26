@@ -13,7 +13,7 @@ var ASQ = require('asynquence');
 //admin           : Boolean
 //auditFields     : { dateUpdated, dateCreated }
 
-var users = exports.users = new Datastore({ filename: './data/users', autoload: true });
+var users = exports.model = new Datastore({ filename: './data/users', autoload: true });
 users.ensureIndex({ fieldName: 'email', unique: true }, function (err) {});
 
 
@@ -39,8 +39,8 @@ exports.encryptPassword = function(password) {
 
 // This method takes in an object (presumably a user object) and strips
 // out fields that we don't want escaping into the wild.
-//+ cleanUser :: object(user) -> object(user)
-exports.cleanUser = omit(['password', '_id', '__v']);
+//+ clean:: object(user) -> object(user)
+var clean = exports.clean = omit(['password', '_id', '__v']);
 
 
 // Comparing passwords is a non-trivial task. Wrap it in a promise and

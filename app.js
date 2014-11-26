@@ -9,8 +9,9 @@ console.log('================================================================');
 
 
 // =============================================================================
-// Load our modules
+// LOAD OUR MODULES
 // =============================================================================
+
 require('ramda').installTo(global);
 var ASQ = require('asynquence');
 var argv = require('optimist').argv;
@@ -29,54 +30,34 @@ var bodyParser = require('body-parser');
 
 var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
-var jwtSecret = 'keyboard cat';
+var jwtSecret = require('./config').jwtSecret;
 
 var routes = {
-    user: require('./routes/users/routes')
+    user: require('./routes/users/routes'),
+    session: require('./routes/session/routes')
 };
 
-
 app.use(bodyParser.json());
-// Require authentication for all API routes
 app.use('/api', expressJwt({secret: jwtSecret}));
 
+
+// =============================================================================
+// ROUTES
+// =============================================================================
 
 app.route('/users')
     .post(routes.user.post);
 
-
 app.route('/login')
-    .get(expressJwt({secret: jwtSecret}), function(req, res) {
-        res.send('ok');
-    })
-    .post(function(req, res) {
-        byEmail(req.body.email)
-
-            // Check if the user entered the right password
-            .seq(function(user) {
-                return comparePassword(user, req.body.password);
-            })
-
-            // Map the user to a token and send it
-            .val(function(user) {
-                var token = jwt.sign(cleanUser(user), jwtSecret);
-                res.send({token: token});
-            })
-
-            // No user found, send a 400
-            .or(function(err) { res.status(400).json(err); });
-    });
-
+    .get(expressJwt({secret: jwtSecret}), routes.session.get)
+    .post(routes.session.post);
 
 app.route('/api/ping')
-    .all(function(req, res) {
-        res.send();
-    });
-
+    .all(function(req, res) { res.send('pong'); });
 
 
 // =============================================================================
-// Start up the server
+// START UP THE SERVER
 // =============================================================================
 app.listen(port, function() {
     console.log('Express server listening on port ' + port);
