@@ -42,13 +42,13 @@ app.use('/api', expressJwt({secret: jwtSecret}));
 // =============================================================================
 
 app.route('/users')
-    // .delete(routes.user.delete)
-    // .get(routes.user.get)
-    // .put(routes.user.put)
+    //.delete(routes.user.delete)
+    //.get(routes.user.get)
+    //.put(routes.user.put)
     .post(routes.user.post);
 
 app.route('/login')
-    // .delete(routes.session.delete)
+    //.delete(routes.session.delete)
     .get(expressJwt({secret: jwtSecret}), routes.session.get)
     .post(routes.session.post);
 

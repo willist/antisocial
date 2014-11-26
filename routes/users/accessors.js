@@ -28,3 +28,14 @@ var all = exports.all = function() {
     });
 };
 
+var create = exports.create = function(options) {
+    return db.users.encryptPassword(options.password)
+        .then(function(done, hash) {
+            options.password = hash;
+
+            db.users.model.insert(options, function(err, doc) {
+                if (err) { return done.fail(err); }
+                done(doc);
+            });
+        });
+};

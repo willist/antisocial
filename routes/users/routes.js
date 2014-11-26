@@ -10,8 +10,8 @@ var accessors = require('./accessors');
 // Summary  : Create a new post entry
 // =============================================================================
 exports.post = function(req, res) {
-    var user = {
-        // password is handled bellow
+    var options = {
+        password: req.body.password,
         name: req.body.name,
         email: req.body.email,
         auditFields: {
@@ -20,15 +20,9 @@ exports.post = function(req, res) {
         }
     };
 
-    db.users.encryptPassword(req.body.password)
-        .then(function(done, hash) {
-            user.password = hash;
-
-            db.users.model.insert(user, function(err, doc) {
-                if (err) { return res.status(400).send(err); }
-
-                res.send(doc);
-            });
+    accessors.create(options)
+        .then(function(done, user) {
+            res.send(user);
         })
         .or(function(err) { res.status(400).send(err) });
 };
