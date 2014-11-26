@@ -13,31 +13,27 @@ console.log('================================================================');
 // =============================================================================
 
 require('ramda').installTo(global);
-var ASQ = require('asynquence');
+
 var argv = require('optimist').argv;
 var port = argv.port ? argv.port : 3000;
-
-var db = require('./db/db');
-
-var http = require('http');
 
 var socketio = require('socket.io');
 var socketioJWT = require('socketio-jwt');
 
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-
 var jwt = require('jsonwebtoken');
 var expressJwt = require('express-jwt');
 var jwtSecret = require('./config').jwtSecret;
+
+var db = require('./db/db');
 
 var routes = {
     user: require('./routes/users/routes'),
     session: require('./routes/session/routes')
 };
 
-app.use(bodyParser.json());
+// Set up our app server
+var app = require('express')();
+app.use(require('body-parser').json());
 app.use('/api', expressJwt({secret: jwtSecret}));
 
 
@@ -46,9 +42,13 @@ app.use('/api', expressJwt({secret: jwtSecret}));
 // =============================================================================
 
 app.route('/users')
+    // .delete(routes.user.delete)
+    // .get(routes.user.get)
+    // .put(routes.user.put)
     .post(routes.user.post);
 
 app.route('/login')
+    // .delete(routes.session.delete)
     .get(expressJwt({secret: jwtSecret}), routes.session.get)
     .post(routes.session.post);
 
