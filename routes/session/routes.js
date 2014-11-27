@@ -2,7 +2,6 @@
 var jwt = require('jsonwebtoken');
 var jwtSecret = require('../../config').jwtSecret;
 
-var usersAccessors = require('../users/accessors');
 var db = require('../../db/db');
 
 exports.get = function(req, res) {
@@ -10,7 +9,7 @@ exports.get = function(req, res) {
 };
 
 exports.post = function(req, res) {
-    usersAccessors.email(req.body.email)
+    db.users.email(req.body.email)
 
         // Check if the user entered the right password
         .seq(function(user) {

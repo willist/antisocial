@@ -1,2 +1,2 @@
-{"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}
 {"password":"$2a$10$cqQoNBNcCGh1iOwFueFFV..0YFDhQtaP.bD3SprK/845Z83.MVsiu","email":"kwelch12@gmail.com","auditFields":{"dateUpdated":1416976981276,"dateCreated":1416976981276},"_id":"xHDJT2nn4p8hydYc"}
+{"$$indexCreated":{"fieldName":"email","unique":true,"sparse":false}}

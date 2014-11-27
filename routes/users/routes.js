@@ -1,7 +1,6 @@
 var ASQ = require('asynquence');
 var config = require('../../config');
 var db = require('../../db/db');
-var accessors = require('./accessors');
 
 
 // =============================================================================
@@ -20,7 +19,7 @@ exports.post = function(req, res) {
         }
     };
 
-    accessors.create(options)
+    db.users.create(options)
         .then(function(done, user) {
             res.send(user);
         })
