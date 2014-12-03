@@ -98,8 +98,43 @@ var get = exports.get = function(id) {
     return findOne({ _id: id });
 };
 
-var update = exports.update = function(id) { };
-var remove = exports.remove = function(id) { };
+/**
+ * Updates a user by ID
+ * NOTE: The attrs param will get mixed into the user object, so take
+ * care not to overwrite or not set things you might need
+ *
+ * @param {string} id The user's ID
+ * @param {object} attrs The attributes you want to modify
+ * @return {ASQ(object)} The user document
+ */
+var update = exports.update = function(id, attrs) {
+    return get(id)
+        .then(function(done, user) {
+            var search = { _id: id };
+            var newUser = mixin(user, attrs);
+            var options = {};
+
+            users.update(search, newUser, options, function(err, numReplaced) {
+                if (err) { return done.fail(err); }
+                done(newUser);
+            });
+        });
+};
+
+/**
+ * remove a user by ID
+ *
+ * @param {string} id The user's ID
+ * @return {ASQ(number)} The number of objects removed
+ */
+var remove = exports.remove = function(id) {
+    return ASQ(function(done) {
+        users.remove({ _id: id}, {}, function (err, numRemoved) {
+            if (err) { return done.fail(err); }
+            done(numRemoved);
+        });
+    });
+};
 
 
 // =============================================================================
