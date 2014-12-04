@@ -2,6 +2,7 @@ var Datastore = require('nedb')
 var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 var ASQ = require('asynquence');
+var nedbWrappers = require('./nedbWrappers');
 
 /**
  * =============================================================================
@@ -35,15 +36,7 @@ users.ensureIndex({
  * @param {object} options The search criteria
  * @return {ASQ(object[])} The promised user documents
  */
-var find = exports.find = function(options) {
-    return ASQ(function(done) {
-        users.find(options, function(err, users) {
-            if (err) { return done.fail(err); }
-
-            done(users);
-        });
-    });
-};
+var find = exports.find = nedbWrappers.find(users);
 
 /**
  * A promised based wrapper around findOne
@@ -51,15 +44,7 @@ var find = exports.find = function(options) {
  * @param {object} options The search criteria
  * @return {ASQ(object)} The promised user document
  */
-var findOne = exports.findOne = function(options) {
-    return ASQ(function(done) {
-        users.findOne(options, function(err, user) {
-            if (err) { return done.fail(err); }
-
-            done(user);
-        });
-    });
-};
+var findOne = exports.findOne = nedbWrappers.findOne(users);
 
 
 
