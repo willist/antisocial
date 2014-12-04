@@ -71,10 +71,11 @@ var findOne = exports.findOne = function(options) {
  * Creates a new user in the database with the specified options. Provides
  * defaults so things line up with the schema
  *
+ * TODO: When should default check happen? On GET, POST, or PUT?
+ *
  * @param {object} options The user's properties
  * @return {ASQ(object)} The user document
  */
-// TODO: When should default check happen? On GET, POST, or PUT?
 var create = exports.create = function(options) {
     return encryptPassword(options.password)
         .then(function(done, hash) {
@@ -90,35 +91,38 @@ var create = exports.create = function(options) {
 /**
  * Fetch a user by ID
  *
+ * TODO: Should we sanitize the user object to match the schema here?
+ *
  * @param {string} id The user's ID
  * @return {ASQ(object)} The user document
  */
-// TODO: Should we sanitize the user object to match the schema here?
 var get = exports.get = function(id) {
     return findOne({ _id: id });
 };
 
 /**
- * Updates a user by ID
- * NOTE: The attrs param will get mixed into the user object, so take
- * care not to overwrite or not set things you might need
+ * Updates a user in the database by searching for the users
+ * provided email or id. All attributes passed in will replace
+ * old attributes
  *
- * @param {string} id The user's ID
- * @param {object} attrs The attributes you want to modify
+ * TODO: Add validators before the write
+ *
+ * @param {object} user The user document you want to persist
  * @return {ASQ(object)} The user document
  */
-var update = exports.update = function(id, attrs) {
-    return get(id)
-        .then(function(done, user) {
-            var search = { _id: id };
-            var newUser = mixin(user, attrs);
-            var options = {};
+var update = exports.update = function(user) {
+    return ASQ(function(done) {
+        var options = {};
+        var search = {
+            _id: user._id,
+            email: user.email
+        };
 
-            users.update(search, newUser, options, function(err, numReplaced) {
-                if (err) { return done.fail(err); }
-                done(newUser);
-            });
+        users.update(search, user, options, function(err, numReplaced) {
+            if (err) { return done.fail(err); }
+            done(user);
         });
+    });
 };
 
 /**
