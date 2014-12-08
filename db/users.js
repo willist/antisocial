@@ -26,26 +26,42 @@ users.ensureIndex({
 }, function (err) {});
 
 
-
 // =============================================================================
-// MONGODB WRAPPERS
+// PRIVATE HELPERS
 // =============================================================================
-/**
- * A promised based wrapper around find
- *
- * @param {object} options The search criteria
- * @return {ASQ(object[])} The promised user documents
- */
-var find = exports.find = nedbWrappers.find(users);
 
 /**
- * A promised based wrapper around findOne
+ * We primarily want to search users by ID if it is present.
+ * If it is not present, search by email. We do this in case
+ * the user wants to update their email, address. It would fail
+ * to find users as the new email would not be in the DB.
+ * This method standerdizes the search process.
  *
- * @param {object} options The search criteria
- * @return {ASQ(object)} The promised user document
+ * @param {object} user The full or partial user document
+ * @return {object} The search field for emails and ids
  */
-var findOne = exports.findOne = nedbWrappers.findOne(users);
+var makeSearch = function(user) {
+    var search = {};
 
+    if (user._id) {
+        search._id = user._id;
+    } else if (user.email) {
+        search.email = user.email;
+    }
+
+    return search;
+};
+
+
+// =============================================================================
+// MONGODB WRAPPERS (./nedbWrappers.js)
+// =============================================================================
+
+var _find = exports._find = nedbWrappers.find(users);
+var _findOne = exports._findOne = nedbWrappers.findOne(users);
+var _insert = exports._insert = nedbWrappers.insert(users);
+var _remove = exports._remove = nedbWrappers.remove(users);
+var _update = exports._update = nedbWrappers.update(users);
 
 
 // =============================================================================
@@ -63,13 +79,9 @@ var findOne = exports.findOne = nedbWrappers.findOne(users);
  */
 var create = exports.create = function(options) {
     return encryptPassword(options.password)
-        .then(function(done, hash) {
+        .seq(function(hash) {
             options.password = hash;
-
-            users.insert(options, function(err, doc) {
-                if (err) { return done.fail(err); }
-                done(doc);
-            });
+            return _insert(options);
         });
 };
 
@@ -82,7 +94,7 @@ var create = exports.create = function(options) {
  * @return {ASQ(object)} The user document
  */
 var get = exports.get = function(id) {
-    return findOne({ _id: id });
+    return _findOne({ _id: id });
 };
 
 /**
@@ -96,33 +108,16 @@ var get = exports.get = function(id) {
  * @return {ASQ(object)} The user document
  */
 var update = exports.update = function(user) {
-    return ASQ(function(done) {
-        var options = {};
-        var search = {
-            _id: user._id,
-            email: user.email
-        };
-
-        users.update(search, user, options, function(err, numReplaced) {
-            if (err) { return done.fail(err); }
-            done(user);
-        });
-    });
+    var search = makeSearch(user);
+    return _update(search, user);
 };
 
 /**
- * remove a user by ID
- *
- * @param {string} id The user's ID
- * @return {ASQ(number)} The number of objects removed
+ * An aliase to use the promisified remove method
  */
-var remove = exports.remove = function(id) {
-    return ASQ(function(done) {
-        users.remove({ _id: id}, {}, function (err, numRemoved) {
-            if (err) { return done.fail(err); }
-            done(numRemoved);
-        });
-    });
+var remove = exports.remove = function(user) {
+    var search = makeSearch(user);
+    return _remove(search);
 };
 
 
@@ -177,7 +172,7 @@ var comparPassword = exports.comparePassword = curry(function(user, challange) {
  *
  * @param {object} user The user document from the database
  */
-var clean = exports.clean = omit(['password', '_id', '__v']);
+var clean = exports.clean = omit(['password', '__v']);
 
 /**
  * A convenience method to findOne based on email
@@ -186,7 +181,7 @@ var clean = exports.clean = omit(['password', '_id', '__v']);
  * @return {ASQ(object)} The promised user document
  */
 var email = exports.email = function(email) {
-    return findOne({email: email});
+    return _findOne({email: email});
 };
 
 /**
@@ -195,6 +190,6 @@ var email = exports.email = function(email) {
  * @return {ASQ(object[])} A promised list of user documents
  */
 var all = exports.all = function() {
-    return find({});
+    return _find({});
 };
 
