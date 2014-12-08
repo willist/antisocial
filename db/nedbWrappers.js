@@ -43,6 +43,7 @@ var insert = exports.insert = curry(function(db, options) {
     return ASQ(function(done) {
         db.insert(options, function(err, doc) {
             if (err) { return done.fail(err); }
+
             done(doc);
         });
     });
@@ -62,6 +63,7 @@ var remove = exports.remove = curryN(2, function(db, query, options) {
     return ASQ(function(done) {
         db.remove(query, options, function (err, numRemoved) {
             if (err) { return done.fail(err); }
+
             done(numRemoved);
         });
     });
@@ -82,6 +84,7 @@ var update = exports.update = curryN(3, function(db, query, update, options) {
     return ASQ(function(done) {
         db.update(query, update, options, function (err, numReplaced) {
             if (err) { return done.fail(err); }
+
             done(numReplaced);
         });
     });

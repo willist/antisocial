@@ -78,10 +78,25 @@ var _update = exports._update = nedbWrappers.update(users);
  * @return {ASQ(object)} The user document
  */
 var create = exports.create = function(options) {
+    if (!options.password || !options.password.length) {
+        return ASQ.failed('No password specified')
+    }
+
+    if (!options.email || !options.email.length) {
+        return ASQ.failed('No email specified')
+    }
+
+    var defaults = {
+        auditFields: {
+            dateUpdated: Date.now(),
+            dateCreated: Date.now()
+        }
+    };
+
     return encryptPassword(options.password)
         .seq(function(hash) {
             options.password = hash;
-            return _insert(options);
+            return _insert(mixin(defaults, options));
         });
 };
 
@@ -103,6 +118,7 @@ var get = exports.get = function(id) {
  * old attributes
  *
  * TODO: Add validators before the write
+ * TODO: Should we be returning the new user object or numreplaced?
  *
  * @param {object} user The user document you want to persist
  * @return {ASQ(object)} The user document

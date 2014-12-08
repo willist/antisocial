@@ -41,22 +41,10 @@ var makeSearch = function(req) {
  * Path     : /api/users/
  */
 exports.post = function(req, res) {
-    var options = {
-        password: req.body.password,
-        name: req.body.name,
-        email: req.body.email,
-        auditFields: {
-            dateUpdated: Date.now(),
-            dateCreated: Date.now()
-        }
-    };
+    var options = req.body;
 
     db.users.create(options)
-
-        // When our document has been inserted into the db
         .val(function(user) { res.send(user); })
-
-        // For any failures
         .or(function(err) { res.status(400).send(err) });
 };
 
@@ -67,7 +55,15 @@ exports.post = function(req, res) {
  * Method   : PUT
  * Path     : /api/users/:id
  */
-exports.put = function(req, res) {};
+exports.put = function(req, res) {
+    var search = makeSearch(req);
+
+    var user = req.body;
+
+    db.users.update(user)
+        .val(function(numReplaced) { res.send(numReplaced); })
+        .or(function(err) { res.status(400).send(err); })
+};
 
 
 /**
