@@ -89,7 +89,6 @@ var create = exports.create = function(options) {
     var defaults = {
         auditFields: {
             dateUpdated: Date.now(),
-            dateCreated: Date.now()
         }
     };
 
@@ -115,7 +114,7 @@ var get = exports.get = function(id) {
 /**
  * Updates a user in the database by searching for the users
  * provided email or id. All attributes passed in will replace
- * old attributes
+ * old attributes. Very similar to create.
  *
  * TODO: Add validators before the write
  * TODO: Should we be returning the new user object or numreplaced?
@@ -125,7 +124,17 @@ var get = exports.get = function(id) {
  */
 var update = exports.update = function(user) {
     var search = makeSearch(user);
-    return _update(search, user);
+    var overrides = {
+        auditFields: {
+            dateUpdated: Date.now(),
+        }
+    };
+
+    return encryptPassword(user.password)
+        .seq(function(hash) {
+            user.password = hash;
+            return _update(search, mixin(user, overrides));
+        });
 };
 
 /**
